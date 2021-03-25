@@ -20,7 +20,7 @@ class ImageMaskSegmenter: SegmentedRenderer {
     override func applyFilter() -> CVPixelBuffer? {
         
         guard var uploadedImage = selectedImg else {
-            return nil
+            return pixelBuffer
         }
         
         let mask = predictOnFrame()
@@ -28,6 +28,16 @@ class ImageMaskSegmenter: SegmentedRenderer {
         guard let alphaMatte = mask else {
             return nil
         }
+    
+        selectedImg = tranformUploadedImage(withUploadedImae: uploadedImage)
+        
+        let resultImg = overlayMask(withMask: alphaMatte, andBackgroundImage: uploadedImage)
+        
+        return createPixelBufferFromImage(withImage: resultImg)
+    }
+    
+    private func tranformUploadedImage(withUploadedImae uploadedImage: CIImage) -> CIImage? {
+     
         
         let imgWidth = CVPixelBufferGetWidth(pixelBuffer!)
         let imgHeight = CVPixelBufferGetHeight(pixelBuffer!)
@@ -40,11 +50,8 @@ class ImageMaskSegmenter: SegmentedRenderer {
         
         let scaleTransform = CGAffineTransform(scaleX: xScale, y: yScale)
         
-        uploadedImage = uploadedImage.transformed(by: scaleTransform)
+        return uploadedImage.transformed(by: scaleTransform)
         
-        let resultImg = overlayMask(withMask: alphaMatte, andBackgroundImage: uploadedImage)
-        
-        return createPixelBufferFromImage(withImage: resultImg)
     }
     
 }

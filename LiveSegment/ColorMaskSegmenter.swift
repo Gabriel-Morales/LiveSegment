@@ -11,7 +11,7 @@ import Cocoa
 
 class ColorMaskSegmenter: SegmentedRenderer {
     
-    public var colorChoice: NSColor?
+    public var colorChoice: NSColor? = NSColor.black
     private var priorNSColor: NSColor?
     private var colorCache = [NSColor:CIImage]()
     private let MAX_CACHE_SIZE = 10
@@ -36,10 +36,9 @@ class ColorMaskSegmenter: SegmentedRenderer {
             flushColorCache()
         }
         
-        
         let ciColorImg: CIImage?
         
-        if (priorNSColor == colorChoice) && (colorCache[colorChoice!] != nil) {
+        if ((priorNSColor == colorChoice) && (colorCache[colorChoice!] != nil)) || colorCache[colorChoice!] != nil {
             ciColorImg = colorCache[colorChoice!]
         } else {
             priorNSColor = colorChoice

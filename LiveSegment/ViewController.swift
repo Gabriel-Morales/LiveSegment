@@ -120,9 +120,9 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
         currentImageBuffer = imageBuffer
-        
+
         guard let segmentRenderer = segmentationRenderer else {
-            previewMetalView.pixelBuffer = currentImageBuffer
+            self.previewMetalView.pixelBuffer = self.currentImageBuffer
             return
         }
 
@@ -130,13 +130,12 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
         if previewMetalView.isFilteringEnabled {
  
             segmentRenderer.pixelBuffer = imageBuffer
-            alteredPixelBuffer = segmentRenderer.applyFilter()
             
-            if alteredPixelBuffer != nil {
+            predictionQueue?.addOperation {
+                alteredPixelBuffer = segmentRenderer.applyFilter()
                 self.previewMetalView.pixelBuffer = alteredPixelBuffer
-            } else {
-                self.previewMetalView.pixelBuffer = self.currentImageBuffer
             }
+
             
         } else {
             previewMetalView.pixelBuffer = currentImageBuffer
@@ -213,7 +212,6 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     @IBAction func uploadImageAction(_ sender: Any) {
         
-        // TODO: Upload Image
         let documentController = NSDocumentController()
         let openPanel = NSOpenPanel()
         

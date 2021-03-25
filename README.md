@@ -10,8 +10,17 @@ As of release v1, the base functionality has been implemented. In later versions
 
 A list of technologies as well as external libraries used are listed below:
 
+* Xcode version 12.4 
 * CoreML - Machine Learning Model: DeepLabV3Int8LUT customized to output a CVPixelBuffer. Available at: https://developer.apple.com/machine-learning/models/
 * Metal
 * CoreML Utility Classes: https://github.com/hollance/CoreMLHelpers
+
+
+### Machine Specifications:
+
+* macOS Big Sur, version 11.2.3
+* 1.7 GHz Quad-Core Intel Core i7
+* 8 GB RAM
+* 1536 MB VRAM
 
 Work In Progess: TO ADD IMAGES/GIFS, source, and release

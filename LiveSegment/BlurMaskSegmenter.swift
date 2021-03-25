@@ -37,7 +37,7 @@ class BlurMaskSegmenter: SegmentedRenderer {
         var backgroundImage = CIImage(cvImageBuffer: buffer)
         
         guassianFilter?.setValue(backgroundImage, forKey: "inputImage")
-        guassianFilter?.setValue(radiusLevel, forKey: "inputRadius") //placeholder radius
+        guassianFilter?.setValue(radiusLevel, forKey: "inputRadius")
         backgroundImage = guassianFilter!.outputImage!
         
         

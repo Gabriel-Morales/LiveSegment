@@ -27,7 +27,7 @@ class AVMetalPreviewView: MTKView  {
     private var vertexFunction: MTLFunction?
     private var fragmentFunction: MTLFunction?
     
-    private let bufferPermits = DispatchSemaphore(value: 3)
+    private let bufferPermits = DispatchSemaphore(value: 5)
     
     private let predictionQueue = DispatchQueue(label: "Prediction Queue", qos: .userInteractive, attributes: .concurrent, autoreleaseFrequency: .workItem)
     

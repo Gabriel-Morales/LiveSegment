@@ -16,7 +16,7 @@ class SegmentedRenderer {
     
     public let predictionSemaphore: DispatchSemaphore
     // TODO: Change request handler types to deal with frames.
-    private let requestHandler: VNSequenceRequestHandler
+    private var requestHandler: VNImageRequestHandler?
     private static var visionRequest: VNCoreMLRequest?
     private static var visionModel: VNCoreMLModel?
     
@@ -40,7 +40,6 @@ class SegmentedRenderer {
     init() {
         
         predictionSemaphore = DispatchSemaphore(value: 1)
-        requestHandler = VNSequenceRequestHandler()
 
         do {
             let config = MLModelConfiguration()
@@ -65,7 +64,8 @@ class SegmentedRenderer {
         }
         
         do {
-            try requestHandler.perform([SegmentedRenderer.visionRequest!], on: imagebuff)
+            requestHandler = VNImageRequestHandler(cvPixelBuffer: imagebuff, options: [.ciContext : cicontext!])
+            try requestHandler!.perform([SegmentedRenderer.visionRequest!])
             let observations = SegmentedRenderer.visionRequest!.results as? [VNPixelBufferObservation]
             
             if observations == nil {

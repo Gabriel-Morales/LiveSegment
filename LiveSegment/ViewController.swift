@@ -80,7 +80,7 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
         do {
             captureInput = try AVCaptureDeviceInput(device: captureDevice!)
             captureSession.beginConfiguration()
-            
+        
             if captureSession.canAddInput(captureInput!) {
                 captureSession.addInput(captureInput!)
             }
@@ -137,6 +137,7 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
             } else {
                 self.previewMetalView.pixelBuffer = self.currentImageBuffer
             }
+            
         } else {
             previewMetalView.pixelBuffer = currentImageBuffer
         }

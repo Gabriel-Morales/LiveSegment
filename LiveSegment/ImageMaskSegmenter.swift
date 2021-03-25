@@ -11,7 +11,8 @@ import CoreImage
 
 class ImageMaskSegmenter: SegmentedRenderer {
     
-    public var selectedImg: CIImage?
+    public var selectedImgUrl: URL?
+    private var imageTranformCache = [URL:CIImage]()
     
     override init() {
         super.init()
@@ -19,7 +20,7 @@ class ImageMaskSegmenter: SegmentedRenderer {
     
     override func applyFilter() -> CVPixelBuffer? {
         
-        guard var uploadedImage = selectedImg else {
+        guard let uploadedImageUrl = selectedImgUrl else {
             return pixelBuffer
         }
         
@@ -29,15 +30,28 @@ class ImageMaskSegmenter: SegmentedRenderer {
             return nil
         }
     
-        selectedImg = tranformUploadedImage(withUploadedImae: uploadedImage)
+        let selectedImg: CIImage?
         
-        let resultImg = overlayMask(withMask: alphaMatte, andBackgroundImage: uploadedImage)
+        if imageTranformCache[uploadedImageUrl] == nil {
+            selectedImg = tranformUploadedImage(withUploadedImageUrl: uploadedImageUrl)
+            imageTranformCache[uploadedImageUrl] = selectedImg
+        } else {
+            selectedImg = imageTranformCache[uploadedImageUrl]
+        }
+        
+        
+        guard let unwrappedSelectedImage = selectedImg else {
+            return nil
+        }
+        
+        let resultImg = overlayMask(withMask: alphaMatte, andBackgroundImage: unwrappedSelectedImage)
         
         return createPixelBufferFromImage(withImage: resultImg)
     }
     
-    private func tranformUploadedImage(withUploadedImae uploadedImage: CIImage) -> CIImage? {
+    private func tranformUploadedImage(withUploadedImageUrl uploadedImageUrl: URL) -> CIImage? {
      
+        let uploadedImage = CIImage(contentsOf: uploadedImageUrl)!
         
         let imgWidth = CVPixelBufferGetWidth(pixelBuffer!)
         let imgHeight = CVPixelBufferGetHeight(pixelBuffer!)

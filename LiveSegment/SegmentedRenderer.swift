@@ -14,7 +14,6 @@ import CoreImage
 
 class SegmentedRenderer {
     
-    public let predictionSemaphore: DispatchSemaphore
     // TODO: Change request handler types to deal with frames.
     private var requestHandler: VNImageRequestHandler?
     private static var visionRequest: VNCoreMLRequest?
@@ -24,6 +23,8 @@ class SegmentedRenderer {
     
     private var buff: CVPixelBuffer?
     internal var bufferPool: CVPixelBufferPool?
+    
+    internal var maskImageCache = [Int:CIImage]()
     
     private let blendFilter = CIFilter(name: "CIBlendWithMask")
     
@@ -38,8 +39,6 @@ class SegmentedRenderer {
     
     
     init() {
-        
-        predictionSemaphore = DispatchSemaphore(value: 1)
 
         do {
             let config = MLModelConfiguration()
@@ -73,7 +72,7 @@ class SegmentedRenderer {
             }
             
             let maskBuff = observations![0].pixelBuffer
-            
+            let maskImage = CIImage(cvImageBuffer: maskBuff)
             
             let imgWidth = CVPixelBufferGetWidth(imagebuff)
             let imgHeight = CVPixelBufferGetHeight(imagebuff)
@@ -86,15 +85,15 @@ class SegmentedRenderer {
             
             let scaleTransform = CGAffineTransform(scaleX: xScale, y: yScale)
 
-            let maskImage = CIImage(cvImageBuffer: maskBuff)
-            let alphaMatte = maskImage.clampedToExtent()
+            var alphaMatte = maskImage.clampedToExtent()
                 .applyingFilter("CIGammaAdjust", parameters: ["inputPower": 0.0007])
                 .applyingFilter("CIGaussianBlur", parameters: ["inputRadius":1])
                 //.applyingFilter("CIUnsharpMask", parameters: ["inputIntensity": 1.5, "inputRadius":8])
                 .cropped(to: maskImage.extent)
 
-            
-            return alphaMatte.transformed(by: scaleTransform)
+            alphaMatte = alphaMatte.transformed(by: scaleTransform)
+
+            return alphaMatte
             
         } catch {
             print("Prediction failed.")

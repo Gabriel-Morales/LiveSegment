@@ -221,9 +221,8 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
         documentController.runModalOpenPanel(openPanel, forTypes: ["jpeg", "jpg", "png", "gif"])
         
         let imageUrl = openPanel.url
-        let image = CIImage(contentsOf: imageUrl!)
-        
-        (segmentationRenderer as! ImageMaskSegmenter).selectedImg = image
+
+        (segmentationRenderer as! ImageMaskSegmenter).selectedImgUrl = imageUrl
     }
     
     

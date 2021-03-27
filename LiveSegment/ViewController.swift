@@ -103,6 +103,9 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
             captureOutput!.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
             captureOutput!.setSampleBufferDelegate(self, queue: avoutputqueue)
             
+            let connection = captureOutput?.connection(with: .video)
+            connection?.isEnabled = true
+
         } else {
             print("Unable to use device for output!")
             captureSession.commitConfiguration()
@@ -143,12 +146,6 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
 
     }
     
-    
-    fileprivate func switchToFilteringMode() {
-        previewMetalView.isFilteringEnabled = true
-        resetQueueForNextFilter()
-    }
-    
     @IBAction func selectSegmentChoiceAction(_ sender: Any) {
         
         let choice = segmentChoiceControl.selectedSegment
@@ -157,27 +154,18 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
             case currentSelectedCtrl:
                 return
             case 0: // no masking choice
-                previewMetalView.isFilteringEnabled = false
-                segmenterColorWell.isHidden = true
-                segmentBlurSlider.isHidden = true
-                segmentUploadButton.isHidden = true
+                uiComponentSwitchForFilterMode(filteringMode: .NoFilter)
                 destroyPredictionQueue()
             case 1: // color masking choice
-                segmenterColorWell.isHidden = false
-                segmentUploadButton.isHidden = true
-                segmentBlurSlider.isHidden = true
+                uiComponentSwitchForFilterMode(filteringMode: .Color)
                 segmentationRenderer = ColorMaskSegmenter()
                 switchToFilteringMode()
             case 2: // blur masking choice
-                segmenterColorWell.isHidden = true
-                segmentUploadButton.isHidden = true
-                segmentBlurSlider.isHidden = false
+                uiComponentSwitchForFilterMode(filteringMode: .Blur)
                 segmentationRenderer = BlurMaskSegmenter()
                 switchToFilteringMode()
             case 3: // image masking choice
-                segmenterColorWell.isHidden = true
-                segmentBlurSlider.isHidden = true
-                segmentUploadButton.isHidden = false
+                uiComponentSwitchForFilterMode(filteringMode: .Image)
                 segmentationRenderer = ImageMaskSegmenter()
                 switchToFilteringMode()
             default:
@@ -188,6 +176,38 @@ class ViewController: NSViewController, AVCaptureVideoDataOutputSampleBufferDele
         
     }
     
+    
+    fileprivate func uiComponentSwitchForFilterMode(filteringMode mode: FilteringMode) {
+        
+        segmentationRenderer = nil
+        
+        switch mode {
+            case .NoFilter:
+                previewMetalView.isFilteringEnabled = false
+                segmenterColorWell.isHidden = true
+                segmentBlurSlider.isHidden = true
+                segmentUploadButton.isHidden = true
+            case .Blur:
+                segmenterColorWell.isHidden = true
+                segmentUploadButton.isHidden = true
+                segmentBlurSlider.isHidden = false
+            case .Color:
+                segmenterColorWell.isHidden = false
+                segmentUploadButton.isHidden = true
+                segmentBlurSlider.isHidden = true
+            case .Image:
+                segmenterColorWell.isHidden = true
+                segmentBlurSlider.isHidden = true
+                segmentUploadButton.isHidden = false
+        }
+        
+    }
+    
+    
+    fileprivate func switchToFilteringMode() {
+        previewMetalView.isFilteringEnabled = true
+        resetQueueForNextFilter()
+    }
     
     
     @IBAction func colorWellChoiceAction(_ sender: Any) {

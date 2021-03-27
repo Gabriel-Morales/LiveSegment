@@ -14,8 +14,7 @@ import CoreImage
 
 class SegmentedRenderer {
     
-    // TODO: Change request handler types to deal with frames.
-    private var requestHandler: VNImageRequestHandler?
+    private var requestHandler: VNSequenceRequestHandler?
     private static var visionRequest: VNCoreMLRequest?
     private static var visionModel: VNCoreMLModel?
     
@@ -23,8 +22,6 @@ class SegmentedRenderer {
     
     private var buff: CVPixelBuffer?
     internal var bufferPool: CVPixelBufferPool?
-    
-    internal var maskImageCache = [Int:CIImage]()
     
     private let blendFilter = CIFilter(name: "CIBlendWithMask")
     
@@ -48,7 +45,7 @@ class SegmentedRenderer {
             SegmentedRenderer.visionModel = try VNCoreMLModel(for: baseModel.model)
             SegmentedRenderer.visionRequest = VNCoreMLRequest(model: SegmentedRenderer.visionModel!)
             SegmentedRenderer.visionRequest!.imageCropAndScaleOption = .scaleFill
-            
+            requestHandler = VNSequenceRequestHandler()
             
         } catch {
             print("Unable to initialize vision renderer.")
@@ -63,8 +60,7 @@ class SegmentedRenderer {
         }
         
         do {
-            requestHandler = VNImageRequestHandler(cvPixelBuffer: imagebuff, options: [.ciContext : cicontext!])
-            try requestHandler!.perform([SegmentedRenderer.visionRequest!])
+            try requestHandler!.perform([SegmentedRenderer.visionRequest!], on: imagebuff)
             let observations = SegmentedRenderer.visionRequest!.results as? [VNPixelBufferObservation]
             
             if observations == nil {
@@ -85,11 +81,11 @@ class SegmentedRenderer {
             
             let scaleTransform = CGAffineTransform(scaleX: xScale, y: yScale)
 
-            var alphaMatte = maskImage.clampedToExtent()
+            var alphaMatte = maskImage
                 .applyingFilter("CIGammaAdjust", parameters: ["inputPower": 0.0007])
-                .applyingFilter("CIGaussianBlur", parameters: ["inputRadius":1])
+                .applyingFilter("CIGaussianBlur", parameters: ["inputRadius":1.5])
                 //.applyingFilter("CIUnsharpMask", parameters: ["inputIntensity": 1.5, "inputRadius":8])
-                .cropped(to: maskImage.extent)
+
 
             alphaMatte = alphaMatte.transformed(by: scaleTransform)
 

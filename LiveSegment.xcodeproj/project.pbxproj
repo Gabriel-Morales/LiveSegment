@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C000891725F948A4001E62C4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C000891625F948A4001E62C4 /* AVFoundation.framework */; };
+		C00B3474260F966E00448EAA /* FilteringModeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00B3473260F966E00448EAA /* FilteringModeEnum.swift */; };
 		C00F82192607D702001EE24E /* DeepLabV3Int8Img.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = C00F82182607D702001EE24E /* DeepLabV3Int8Img.mlmodel */; };
 		C00F821C26083516001EE24E /* SegmentedRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00F821B26083516001EE24E /* SegmentedRenderer.swift */; };
 		C0110FA125FC1B9100D82383 /* AVMetalPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0110FA025FC1B9100D82383 /* AVMetalPreviewView.swift */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		C000891625F948A4001E62C4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		C00B3473260F966E00448EAA /* FilteringModeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteringModeEnum.swift; sourceTree = "<group>"; };
 		C00F82182607D702001EE24E /* DeepLabV3Int8Img.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = DeepLabV3Int8Img.mlmodel; sourceTree = "<group>"; };
 		C00F821B26083516001EE24E /* SegmentedRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedRenderer.swift; sourceTree = "<group>"; };
 		C0110FA025FC1B9100D82383 /* AVMetalPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVMetalPreviewView.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				C0F3C22C260A574100143931 /* ColorMaskSegmenter.swift */,
 				C0F3C22F260A577600143931 /* BlurMaskSegmenter.swift */,
 				C0F3C232260A579700143931 /* ImageMaskSegmenter.swift */,
+				C00B3473260F966E00448EAA /* FilteringModeEnum.swift */,
 			);
 			path = LiveSegment;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				C0F3C233260A579700143931 /* ImageMaskSegmenter.swift in Sources */,
 				C0DE3FA125FA865E00625857 /* Array+Extensions.swift in Sources */,
 				C0DE3FA325FA865E00625857 /* MLModel+Images.swift in Sources */,
+				C00B3474260F966E00448EAA /* FilteringModeEnum.swift in Sources */,
 				C0DE3FAB25FA865E00625857 /* MLMultiArray+Image.swift in Sources */,
 				C0DE3FAF25FA865E00625857 /* CGImagePropertyOrientation.swift in Sources */,
 				C080F19D260650370025A224 /* MetalResourceHelper.swift in Sources */,

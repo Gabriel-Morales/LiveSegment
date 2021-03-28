@@ -15,15 +15,12 @@ import CoreImage
 class SegmentedRenderer {
     
     private var requestHandler: VNSequenceRequestHandler?
-    private static var visionRequest: VNCoreMLRequest?
     private static var visionModel: VNCoreMLModel?
     
     public var cicontext: CIContext?
     
     private var buff: CVPixelBuffer?
     internal var bufferPool: CVPixelBufferPool?
-    
-    private let blendFilter = CIFilter(name: "CIBlendWithMask")
     
     public var pixelBuffer: CVBuffer? {
         get {
@@ -43,8 +40,6 @@ class SegmentedRenderer {
             
             let baseModel = try DeepLabV3Int8Img(configuration: config)
             SegmentedRenderer.visionModel = try VNCoreMLModel(for: baseModel.model)
-            SegmentedRenderer.visionRequest = VNCoreMLRequest(model: SegmentedRenderer.visionModel!)
-            SegmentedRenderer.visionRequest!.imageCropAndScaleOption = .scaleFill
             requestHandler = VNSequenceRequestHandler()
             
         } catch {
@@ -60,14 +55,19 @@ class SegmentedRenderer {
         }
         
         do {
-            try requestHandler!.perform([SegmentedRenderer.visionRequest!], on: imagebuff)
-            let observations = SegmentedRenderer.visionRequest!.results as? [VNPixelBufferObservation]
+            
+            let visionRequest = VNCoreMLRequest(model: SegmentedRenderer.visionModel!)
+            visionRequest.imageCropAndScaleOption = .scaleFill
+            
+            try requestHandler!.perform([visionRequest], on: imagebuff)
+            let observations = visionRequest.results as? [VNPixelBufferObservation]
             
             if observations == nil {
                 return nil
             }
             
             let maskBuff = observations![0].pixelBuffer
+            
             let maskImage = CIImage(cvImageBuffer: maskBuff)
             
             let imgWidth = CVPixelBufferGetWidth(imagebuff)
@@ -83,9 +83,7 @@ class SegmentedRenderer {
 
             var alphaMatte = maskImage
                 .applyingFilter("CIGammaAdjust", parameters: ["inputPower": 0.0007])
-                .applyingFilter("CIGaussianBlur", parameters: ["inputRadius":1.5])
-                //.applyingFilter("CIUnsharpMask", parameters: ["inputIntensity": 1.5, "inputRadius":8])
-
+                .applyingFilter("CIBoxBlur", parameters: ["inputRadius":3.5])
 
             alphaMatte = alphaMatte.transformed(by: scaleTransform)
 
@@ -110,12 +108,14 @@ class SegmentedRenderer {
         }
         
         let inputImage = CIImage(cvImageBuffer: imagebuff)
-
+        var blendFilter = CIFilter(name: "CIBlendWithMask")
+        
         blendFilter?.setValue(inputImage, forKey: "inputImage")
         blendFilter?.setValue(mask, forKey: "inputMaskImage")
         blendFilter?.setValue(backImage, forKey: "inputBackgroundImage")
         
         let outputImg = blendFilter?.outputImage
+        blendFilter = nil
         
         return outputImg
     }

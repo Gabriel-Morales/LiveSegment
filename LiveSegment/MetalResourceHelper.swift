@@ -26,6 +26,8 @@ class MetalResourceHelper {
     private var vertexFunction: MTLFunction?
     private var fragmentFunction: MTLFunction?
     
+    private var textureDescriptor: MTLTextureDescriptor?
+    
     public var defaultColorFormat: MTLPixelFormat {
         return .bgra8Unorm
     }
@@ -36,7 +38,21 @@ class MetalResourceHelper {
         setupCommandQueue()
         setupDefaultLibrary()
         setupSampler()
+        setupTextureDescriptor()
         
+    }
+    
+    private func setupTextureDescriptor() {
+        
+        self.textureDescriptor = MTLTextureDescriptor()
+        
+        guard let _ = textureDescriptor else {
+            print("Texture descriptor setup failed.")
+            return
+        }
+        
+        self.textureDescriptor?.resourceOptions = .storageModePrivate
+        self.textureDescriptor?.usage = .shaderRead
     }
     
     private func setupMetalDevice() {
@@ -179,6 +195,10 @@ class MetalResourceHelper {
     
     public func getSampler() -> (MTLSamplerDescriptor?, MTLSamplerState?) {
         return (self.samplerDescriptor, self.samplerState)
+    }
+    
+    public func getTextureDecriptor() -> MTLTextureDescriptor? {
+        return self.textureDescriptor
     }
     
 }

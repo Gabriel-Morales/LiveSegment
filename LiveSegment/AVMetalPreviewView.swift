@@ -27,7 +27,7 @@ class AVMetalPreviewView: MTKView  {
     private var vertexFunction: MTLFunction?
     private var fragmentFunction: MTLFunction?
     
-    private let bufferPermits = DispatchSemaphore(value: 5)
+    private let bufferPermits = DispatchSemaphore(value: 3)
     
     private let predictionQueue = DispatchQueue(label: "Prediction Queue", qos: .userInteractive, attributes: .concurrent, autoreleaseFrequency: .workItem)
     
@@ -172,8 +172,9 @@ class AVMetalPreviewView: MTKView  {
         
         var cvMetalOutputTexture: CVMetalTexture?
         createCVMetalTexture(bufferWidth, bufferHeight, &cvMetalOutputTexture, pixBuff)
-            
+        
         let metalTexture = CVMetalTextureGetTexture(cvMetalOutputTexture!)
+        
         commandEncoder.setFragmentTexture(metalTexture, index: 0)
         commandEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
             

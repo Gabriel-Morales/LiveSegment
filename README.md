@@ -23,4 +23,9 @@ A list of technologies as well as external libraries used are listed below:
 * 8 GB RAM
 * 1536 MB VRAM
 
-Work In Progess: TO ADD IMAGES/GIFS, source, and release
+
+### Known Issues:
+- Data races occur in the pixel buffer between the segmentation mask classes and/or the AVMetalPreviewView
+- The threshold for recomputation of the segmentation is not perfect, so slight movements will cause the prior mask to remain in place. A possible future compensation will be translating the mask along with the frame.
+
+Work in progress: To add images/gifs/possibly new releases

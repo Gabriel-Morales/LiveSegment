@@ -29,3 +29,5 @@ A list of technologies as well as external libraries used are listed below:
 - The threshold for recomputation of the segmentation is not perfect, so slight movements will cause the prior mask to remain in place. A possible future compensation will be translating the mask along with the frame.
 
 Work in progress: To add images/gifs/possibly new releases
+
+![alt text](sc_1.png "Image mask demo")
